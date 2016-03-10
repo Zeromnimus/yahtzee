@@ -103,8 +103,11 @@ function GameInitialize() {
 	///////////////////////////////////////////////////////////////////////////
 	var MainMenuState = new Phaser.State();
 		// for menu select
-		var upKey;
-		var downKey;
+		var upKey, 
+			downKey, 
+			muteKey,
+			enterKey;
+
 		var star;
 		var phaser;
 		var starY = new Array (90,130,170,210,250);
@@ -112,7 +115,8 @@ function GameInitialize() {
 
 		var dollar;
 		// for bg sound;
-		var StaticText
+		var StaticText,
+			CommentText;
 		var menu_music;
 		var music;
 		var dollar_music;
@@ -188,6 +192,15 @@ function GameInitialize() {
 		    StaticText.inputEnabled = true;
 		    StaticText.input.useHandCursor = true;
 
+			CommentText = Game.add.text( 10 , Game.world.height - 40 , "Hello!", {
+		            font: '12px "Press Start 2P"',
+		            fill: '#FFFFFF',
+		            stroke: '#000000',
+		            strokeThickness: 3,
+		            align: 'center'
+		        });
+		    CommentText.anchor.setTo(0,0.5);
+
 		    var listener = function() {
 			    if (SoundTrigger){
 			    	StaticText.setText('Music off');
@@ -208,13 +221,16 @@ function GameInitialize() {
 		    // *** assign key to select menu items 
 		    upKey = Game.input.keyboard.addKey(Phaser.Keyboard.UP);
 		    downKey = Game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+		    // *** assign key to confirm selected menu item
+		    enterKey = Game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+		    // *** assign key to play|stop music
 		    muteKey = Game.input.keyboard.addKey(Phaser.Keyboard.M);
 
 		    Game.input.keyboard.addKeyCapture([ Phaser.Keyboard.UP, Phaser.Keyboard.DOWN ]);
 
 		    Game.input.keyboard.onUpCallback = function( e ){            
 		    	if(e.keyCode == Phaser.Keyboard.UP){                
-		    		console.log('upkey is UP y = ' + star.y);
+		    		// console.log('upkey is UP y = ' + star.y);
 		    		switch (stY) {
 		    			case 0:
 		    				stY = 4;
@@ -236,7 +252,8 @@ function GameInitialize() {
 		    				break;	    				
 		    		}
 		    		menu_music.play();
-		    		menu_music.volume = 0.9;		    		
+		    		menu_music.volume = 0.9;	
+		    		CommentText.setText('Select MenuItem: ' + stY);	
 			    }        
 		    	if(e.keyCode == Phaser.Keyboard.DOWN){                
 		    		console.log('downkey is UP y = ' + star.y);                
@@ -261,7 +278,8 @@ function GameInitialize() {
 		    				break;	    				
 		    		}	    		
 		    		menu_music.play();
-		    		menu_music.volume = 0.9;		    		
+		    		menu_music.volume = 0.9;
+		    		CommentText.setText('Select MenuItem: ' + stY);
 			    }	
 			    if(e.keyCode == Phaser.Keyboard.M)	{
 			    	if (SoundTrigger){
@@ -273,7 +291,10 @@ function GameInitialize() {
 			    	   SoundTrigger = true;
 			    	   music.play();
 			    	}
-			    }	    
+			    }	   
+			    if(e.keyCode == Phaser.Keyboard.ENTER) {
+			    	CommentText.setText(' Key Enter press');
+			    } 
 		    };
 
 		    Game.input.mouse.capture = true;
