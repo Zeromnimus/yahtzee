@@ -123,6 +123,9 @@ function GameInitialize() {
 		var SoundTrigger = true;
 		// test var
 		var i = 0;
+		// text of menu & title
+		var MenuItemText = new Array ("Тренировка", "Игра", "Создать игру", "Настройки", "Правила"), 
+			TitleText = "$ Покер на костях $";
 
 		MainMenuState.create = function() {
 			Game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -142,23 +145,28 @@ function GameInitialize() {
 				dollar_music = Game.add.audio('dollar_bound');
 				dollar_music.volume = 0.5;
 
+			function addTextToScene( wX, wY, mText ) {
+				var curText = "";
+				curText = Game.add.text( wX, wY, mText, {
+		            font: '20px Play',
+		            fill: '#FFFFFF',
+		            stroke: '#000000',
+		            strokeThickness: 2,
+		            align: 'center'
+		        });
+		    	curText.anchor.setTo(0.5, 0.5);
+			}
+
+			var y;
+			var worldHalfWithX = (Game.world.width / 2);
+
+			for (y = 0; y < 5; y++) {
+				addTextToScene( worldHalfWithX, 105 + (40*y), MenuItemText[y]);
+			};
+
 			text = Game.add.bitmapText( (Game.world.width / 2) , 50, 'shortstack','$ Poker on Bones $',40);
 			text.anchor.setTo(0.5,0.5);
 
-			text = Game.add.bitmapText((Game.world.width / 2), 100, 'desyrel','Play',32);
-			text.anchor.setTo(0.5,0.5);
-
-			text = Game.add.bitmapText((Game.world.width / 2), 140, 'desyrel','Online Play',32);
-			text.anchor.setTo(0.5,0.5);
-
-			text = Game.add.bitmapText((Game.world.width / 2), 180, 'desyrel','Settings',32);
-			text.anchor.setTo(0.5,0.5);
-
-			text = Game.add.bitmapText((Game.world.width / 2), 220, 'desyrel','Rules',32);
-			text.anchor.setTo(0.5,0.5);
-
-			text = Game.add.bitmapText((Game.world.width / 2), 260, 'desyrel','About',32);	
-			text.anchor.setTo(0.5,0.5);
 			// jumping symbol Dollar
 			dollar = Game.add.bitmapText(10, 10, 'shortstack', '$', 32);
 			dollar2 = Game.add.bitmapText(10, 600, 'shortstack', '$', 32);
@@ -172,11 +180,11 @@ function GameInitialize() {
 			dollar2.body.collideWorldBounds = true;
 			dollar2.body.bounce.set(1);
 
-			var	StaticText1 = Game.add.text( Game.world.width / 2, Game.world.height - 40, "Developer aka 'Zerom' 2016 (c)", {
-		            font: '8px "Press Start 2P"',
+			var	StaticText1 = Game.add.text( Game.world.width / 2, Game.world.height - 40, "Разработчик aka 'Zerom' 2016 (c)", {
+		            font: '14px Play',
 		            fill: '#FFFFFF',
 		            stroke: '#000000',
-		            strokeThickness: 3,
+		            strokeThickness: 2,
 		            align: 'center'
 		        });
 		    StaticText1.anchor.setTo(0.5, 0.5);
