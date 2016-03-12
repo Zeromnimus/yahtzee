@@ -1,6 +1,6 @@
 WebFont.load({
         google: {
-            families: ['Press+Start+2P']
+            families: ['Press+Start+2P', 'Play::latin,cyrillic-ext']
         },
         active: function() {
             GameInitialize();
@@ -18,7 +18,7 @@ function GameInitialize() {
 	    CLOUDS_SHOW_MIN_TIME = 3000, //минимальная задержка перед следующим облаком
 	    CLOUDS_SHOW_MAX_TIME = 5000, //максимальная задержка перед следующим облаком
 	    MAX_DIFFICULT = 100, //на основе этого коэффициента также вычисляется расстояние между трубами
-	    SCENE = '', //идентификатор сцены, где нужно рендерить. В данном случае пусто (по умолчанию рендерит в body)
+	    SCENE = 'game_box', //идентификатор сцены, где нужно рендерить. В данном случае пусто (по умолчанию рендерит в body)
 	    TITLE_TEXT = "FLAPPY BIRD", //Название игры в главном меню
 	    HIGHSCORE_TITLE = "HIGHSCORES", //Название игрового меню
 	    HIGHSCORE_SUBMIT = "POST SCORE", //Название кнопки в рекордах для сохранения своего рекорда
@@ -46,7 +46,7 @@ function GameInitialize() {
 	var Game = new Phaser.Game(800, 600, Phaser.CANVAS, SCENE);
 	    //Включаем поддержку RequestAnimationFrame
 	    Game.raf = new Phaser.RequestAnimationFrame(Game);
-	    Game.antialias = false;
+	    Game.antialias = true;
 	    Game.raf.start();
 	///////////////////////////////////////////////////////////////////////////
 	//                  Создаем instance BootGameState                       //
@@ -124,8 +124,21 @@ function GameInitialize() {
 		// test var
 		var i = 0;
 		// text of menu & title
-		var MenuItemText = new Array ("Тренировка", "Игра", "Создать игру", "Настройки", "Правила"), 
-			TitleText = "$ Покер на костях $";
+		var MenuItemText = new Array (
+			"Тренировка", 
+			"Игра", 
+			"Создать игру", 
+			"Настройки", 
+			"Правила"
+			), 
+			TitleText = "$ ПОКЕР НА КУБИКАХ $",
+			CommentMenuText = new Array (
+			"Тренировка - начни играть не теряя фишки", 
+			"Игра - играй с компьютером и выигрывай", 
+			"Создать игру - создайте стол и начните игру с другом", 
+			"Настройки - выберай аватар и другие настройки", 
+			"Правила - перед игрой прочитай условия и правила"
+			);
 
 		MainMenuState.create = function() {
 			Game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -144,7 +157,7 @@ function GameInitialize() {
 				menu_music.volume = 0.5;
 				dollar_music = Game.add.audio('dollar_bound');
 				dollar_music.volume = 0.5;
-
+			// текст главного меню
 			function addTextToScene( wX, wY, mText ) {
 				var curText = "";
 				curText = Game.add.text( wX, wY, mText, {
@@ -164,9 +177,7 @@ function GameInitialize() {
 				addTextToScene( worldHalfWithX, 105 + (40*y), MenuItemText[y]);
 			};
 
-			text = Game.add.bitmapText( (Game.world.width / 2) , 50, 'shortstack','$ Poker on Bones $',40);
-			text.anchor.setTo(0.5,0.5);
-
+			addTextToScene(worldHalfWithX, 50, TitleText);
 			// jumping symbol Dollar
 			dollar = Game.add.bitmapText(10, 10, 'shortstack', '$', 32);
 			dollar2 = Game.add.bitmapText(10, 600, 'shortstack', '$', 32);
@@ -200,14 +211,14 @@ function GameInitialize() {
 		    StaticText.inputEnabled = true;
 		    StaticText.input.useHandCursor = true;
 
-			CommentText = Game.add.text( 10 , Game.world.height - 40 , "Hello!", {
-		            font: '12px "Press Start 2P"',
+			CommentText = Game.add.text( worldHalfWithX , Game.world.height - 140 , "Добро пожаловать", {
+		            font: '14px Play',
 		            fill: '#FFFFFF',
 		            stroke: '#000000',
 		            strokeThickness: 3,
 		            align: 'center'
 		        });
-		    CommentText.anchor.setTo(0,0.5);
+		    CommentText.anchor.setTo(0.5,0.5);
 
 		    var listener = function() {
 			    if (SoundTrigger){
@@ -261,7 +272,7 @@ function GameInitialize() {
 		    		}
 		    		menu_music.play();
 		    		menu_music.volume = 0.9;	
-		    		CommentText.setText('Select MenuItem: ' + stY);	
+		    		CommentText.setText(CommentMenuText[stY]);
 			    }        
 		    	if(e.keyCode == Phaser.Keyboard.DOWN){                
 		    		console.log('downkey is UP y = ' + star.y);                
@@ -287,7 +298,7 @@ function GameInitialize() {
 		    		}	    		
 		    		menu_music.play();
 		    		menu_music.volume = 0.9;
-		    		CommentText.setText('Select MenuItem: ' + stY);
+		    		CommentText.setText(CommentMenuText[stY]);
 			    }	
 			    if(e.keyCode == Phaser.Keyboard.M)	{
 			    	if (SoundTrigger){
