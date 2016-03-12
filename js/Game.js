@@ -350,18 +350,147 @@ function GameInitialize() {
 	//             Создаем instance TrainGameState                           //
 	///////////////////////////////////////////////////////////////////////////
 	var TrainGameState = new Phaser.State();
-
+		var dice = [
+			[null, null, null, null, null],
+			[null, null, null, null, null],
+			[null, null, null, null, null],
+			[null, null, null, null, null],
+			[null, null, null, null, null]
+		];
+		var score_combine_text = new Array (
+			"Тройка - 100 очков",
+			"Фулхаус - 200 очков",
+			"Карэ - 300 очков",
+			"Стрит - 500 очков",
+			"Покер - 1000 очков"
+		);
+		TrainGameState.preload = function() {
+			Game.load.spritesheet('dice', 'assets/dice.png', 64, 64);
+		} // TrainGameState.preload~
 		TrainGameState.create = function() {
-			// игра в режиме обучения
-		var	CommentText = Game.add.text( Game.world.width / 2 , Game.world.height / 2, "TrainGameState", {
+		//  - добавим рабочий фон сцены
+			var bg = Game.add.graphics();
+			    bg.beginFill(0x507010, 0.5);
+			    bg.drawRect(0, 0, 800, 600);
+		//  - добавим кнопку возврата в меню (закрытие трейнгеймстейт)
+		//  - добавим начальный тестовый текст и скроем его и уничтожим
+			var	CommentText = Game.add.text( Game.world.width / 2 , Game.world.height / 2, "TrainGameState", {
 		            font: '22px Play',
 		            fill: '#FFF',
 		            stroke: '#CCC',
-		            strokeThickness: 3,
+		            strokeThickness: 2,
 		            align: 'center'
 		        });
 		    CommentText.anchor.setTo(0.5,0.5);
-		}
+		    var tween2 = Game.add.tween(CommentText).to({
+		        alpha: 0
+		    }, 1000, Phaser.Easing.Linear.None, true);
+		    
+		// - добавим кнопку "Бросить"
+		// - добавим ячейки сбора костей
+		// - добавим панель с подсказками комбинаций
+			var footer = Game.add.graphics();
+			    footer.beginFill(0xe4e4e4, 0.5);
+			    footer.drawRect(0, 530, 800, 70);
+			function placeScoreHint(pX, pY, itemNum) { // функция разместитель подсказок
+				hint_score_combine_text = Game.add.text( pX , pY, score_combine_text[itemNum], {
+			            font: '12px Play',
+			            fill: '#000',
+			            stroke: '#ccc',
+			            strokeThickness: 1,
+			            align: 'center'
+			        });
+			    hint_score_combine_text.anchor.setTo(0.5);
+			};			    
+			var i = 0, j = 0; // размещаем кубики подсказки комбинаций
+				for( i=0; i<6; i++ ) {
+					j = 0;
+					switch (i) {
+						case 0: // сэт тройка
+						dice[i][j++] = Game.add.sprite((20*j) + 40, 550, 'dice', 4);
+						dice[i][j++] = Game.add.sprite((20*j) + 40, 550, 'dice', 4);
+						dice[i][j++] = Game.add.sprite((20*j) + 40, 550, 'dice', 4);
+						placeScoreHint((20*j) + 45, 545, i);
+						dice[i][j++] = Game.add.sprite((20*j) + 40, 550, 'dice', 0);
+						dice[i][j++] = Game.add.sprite((20*j) + 40, 550, 'dice', 1);
+
+						dice[i].forEach(function(item, i, arr) {
+							item.scale.x = 0.3;
+							item.scale.y = 0.3;
+						});
+						dice[i][3].alpha = 0.3;
+						dice[i][4].alpha = 0.3;
+						break;
+						case 1: // сэт фулл хаус
+						dice[i][j++] = Game.add.sprite((20*j) + 160, 550, 'dice', 1);
+						dice[i][j++] = Game.add.sprite((20*j) + 160, 550, 'dice', 1);
+						dice[i][j++] = Game.add.sprite((20*j) + 160, 550, 'dice', 1);
+						placeScoreHint((20*j) + 165, 545, i);
+						dice[i][j++] = Game.add.sprite((20*j) + 160, 550, 'dice', 5);
+						dice[i][j++] = Game.add.sprite((20*j) + 160, 550, 'dice', 5);
+
+						dice[i].forEach(function(item, i, arr) {
+							item.scale.x = 0.3;
+							item.scale.y = 0.3;
+						});
+						break;
+						case 2: // сэт карэ
+						dice[i][j++] = Game.add.sprite((20*j) + 280, 550, 'dice', 4);
+						dice[i][j++] = Game.add.sprite((20*j) + 280, 550, 'dice', 4);
+						dice[i][j++] = Game.add.sprite((20*j) + 280, 550, 'dice', 4);
+						placeScoreHint((20*j) + 285, 545, i);
+						dice[i][j++] = Game.add.sprite((20*j) + 280, 550, 'dice', 4);
+						dice[i][j++] = Game.add.sprite((20*j) + 280, 550, 'dice', 1);
+
+						dice[i].forEach(function(item, i, arr) {
+							item.scale.x = 0.3;
+							item.scale.y = 0.3;
+						});
+						dice[i][4].alpha = 0.3;					
+						break;
+						case 3: // сэт стрит
+						dice[i][j++] = Game.add.sprite((20*j) + 400, 550, 'dice', 0);
+						dice[i][j++] = Game.add.sprite((20*j) + 400, 550, 'dice', 1);
+						dice[i][j++] = Game.add.sprite((20*j) + 400, 550, 'dice', 2);
+						placeScoreHint((20*j) + 405, 545, i);
+						dice[i][j++] = Game.add.sprite((20*j) + 400, 550, 'dice', 3);
+						dice[i][j++] = Game.add.sprite((20*j) + 400, 550, 'dice', 4);						
+						dice[i].forEach(function(item, i, arr) {
+							item.scale.x = 0.3;
+							item.scale.y = 0.3;
+						});						
+						break;
+						case 4: // сэт покер
+						dice[i][j++] = Game.add.sprite((20*j) + 520, 550, 'dice', 0);
+						dice[i][j++] = Game.add.sprite((20*j) + 520, 550, 'dice', 0);
+						dice[i][j++] = Game.add.sprite((20*j) + 520, 550, 'dice', 0);
+						placeScoreHint((20*j) + 525, 545, i);
+						dice[i][j++] = Game.add.sprite((20*j) + 520, 550, 'dice', 0);
+						dice[i][j++] = Game.add.sprite((20*j) + 520, 550, 'dice', 0);						
+						dice[i].forEach(function(item, i, arr) {
+							item.scale.x = 0.3;
+							item.scale.y = 0.3;
+						});						
+						break;
+						default:
+						break;
+					};
+				};
+
+
+		// - добавим панель с досказками ходов (в трейне,а в игре тут будет панель соперника с аватаром и результатами раунов)
+		// - добавим панель с аватаром и результатми раундов
+		// - добавим общий результат хода игры по броскам
+		// - добавим кол-во текущих бросков в раунде
+		// - добавим кнопку вызова панельки с помощью (правилами)
+		// - добавим скрытую панель с текстом правил
+		// - добавим кнопку переключения звуков
+		// - добавим баннера (ротируемые в перспективе)
+		// todo: отделить статический каркас и вынести как константа всех сцен		    
+		} // TrainGameState.create~
+		TrainGameState.update = function() {
+
+		} // TrainGameState.update~
 
 	///////////////////////////////////////////////////////////////////////////
 	//                  Создаем instance GameState                           //
@@ -388,8 +517,8 @@ function GameInitialize() {
 	    Game.state.add('Preloader', PreloaderGameState, false);
 	    Game.state.add('MainMenu', MainMenuState, false);
 	    Game.state.add('TrainGame', TrainGameState, false);
-	    //Game.state.add('Game', GameState, false);
-	    //Game.state.add('GameOver', GameOverState, false);
+	    Game.state.add('Game', GameState, false);
+	    Game.state.add('GameOver', GameOverState, false);
 
 	    //Главным шагом является старт загрузки Boot State'а
 	    Game.state.start('Boot');		
