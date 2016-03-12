@@ -312,7 +312,10 @@ function GameInitialize() {
 			    	}
 			    }	   
 			    if(e.keyCode == Phaser.Keyboard.ENTER) {
-			    	CommentText.setText(' Key Enter press');
+			    	CommentText.setText(' Switch to: ' + stY);
+			    	// todo: выбрать state и удалить мусор 
+			    	music.stop();
+			    	Game.state.start('TrainGame');
 			    } 
 		    };
 
@@ -344,6 +347,23 @@ function GameInitialize() {
 		}; // MainMenuState.render~
 
 	///////////////////////////////////////////////////////////////////////////
+	//             Создаем instance TrainGameState                           //
+	///////////////////////////////////////////////////////////////////////////
+	var TrainGameState = new Phaser.State();
+
+		TrainGameState.create = function() {
+			// игра в режиме обучения
+		var	CommentText = Game.add.text( Game.world.width / 2 , Game.world.height / 2, "TrainGameState", {
+		            font: '22px Play',
+		            fill: '#FFF',
+		            stroke: '#CCC',
+		            strokeThickness: 3,
+		            align: 'center'
+		        });
+		    CommentText.anchor.setTo(0.5,0.5);
+		}
+
+	///////////////////////////////////////////////////////////////////////////
 	//                  Создаем instance GameState                           //
 	///////////////////////////////////////////////////////////////////////////
 	var GameState = new Phaser.State();
@@ -367,6 +387,7 @@ function GameInitialize() {
 	    Game.state.add('Boot', BootGameState, false);
 	    Game.state.add('Preloader', PreloaderGameState, false);
 	    Game.state.add('MainMenu', MainMenuState, false);
+	    Game.state.add('TrainGame', TrainGameState, false);
 	    //Game.state.add('Game', GameState, false);
 	    //Game.state.add('GameOver', GameOverState, false);
 
