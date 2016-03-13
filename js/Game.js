@@ -72,23 +72,15 @@ function GameInitialize() {
 	    }; // BootGameState.create~
 
 	var loadAssets = function loadAssets() {
-		Game.load.image('bg','assets/sky.png');
-		Game.load.image('star', 'assets/star.png');
-		Game.load.image('phaser', 'assets/phaser.png');
-
-		Game.load.bitmapFont('desyrel', 'assets/fonts/bitmapFonts/desyrel.png', 'assets/fonts/bitmapFonts/desyrel.xml');
-		Game.load.bitmapFont('shortstack', 'assets/fonts/bitmapFonts/shortStack.png', 'assets/fonts/bitmapFonts/shortStack.xml');	
 		
-		Game.load.audio('menu_switch', 'assets/audio/menu_switch.mp3');	
-		Game.load.audio('dollar_bound', 'assets/audio/lazer_wall_off.mp3');	
-		Game.load.audio('bg_audio', 'assets/audio/bodenstaendig_2000_in_rock_4bit.mp3');	
+
 	};	// loadAssets~
 	///////////////////////////////////////////////////////////////////////////
 	//                  Создаем instance PreloaderGameState                  //
 	///////////////////////////////////////////////////////////////////////////
 	var PreloaderGameState = new Phaser.State();	
 		PreloaderGameState.preload = function() {
-		    loadAssets();
+		    // loadAssets();
 		};	
 		PreloaderGameState.create = function() {			
 		    var tween = Game.add.tween(LoadingText).to({
@@ -96,7 +88,7 @@ function GameInitialize() {
 		    }, 3000, Phaser.Easing.Linear.None, true);
 
 		    tween.onComplete.add(function() {
-		        Game.state.start('MainMenu', false, false);
+		        Game.state.start('MainMenu', true, true);
 		    }, this);
 		};	// PreloaderGameState~
 	///////////////////////////////////////////////////////////////////////////
@@ -114,13 +106,12 @@ function GameInitialize() {
 		var starY = new Array (90,130,170,210,250);
 		var stY = 0;
 
-		var dollar;
 		// for bg sound;
 		var StaticText,
 			CommentText;
 		var menu_music;
 		var music;
-		var dollar_music;
+
 		var SoundTrigger = true;
 		// test var
 		var i = 0;
@@ -140,7 +131,21 @@ function GameInitialize() {
 			"Настройки - выберай аватар и другие настройки", 
 			"Правила - перед игрой прочитай условия и правила"
 			);
+		MainMenuState.preload = function() {
+			Game.load.bitmapFont('shortstack', 'assets/fonts/bitmapFonts/shortStack.png', 'assets/fonts/bitmapFonts/shortStack.xml');
+			Game.load.bitmapFont('desyrel', 'assets/fonts/bitmapFonts/desyrel.png', 'assets/fonts/bitmapFonts/desyrel.xml');
+			Game.load.bitmapFont('shortstack', 'assets/fonts/bitmapFonts/shortStack.png', 'assets/fonts/bitmapFonts/shortStack.xml');		
 
+			Game.load.image('bg','assets/sky.png');
+			Game.load.image('star', 'assets/star.png');
+			Game.load.image('phaser', 'assets/phaser.png');
+
+			Game.load.spritesheet('coins', 'assets/coin.png', 32, 32);
+						
+			Game.load.audio('menu_switch', 'assets/audio/menu_switch.mp3');	
+
+			Game.load.audio('bg_audio', 'assets/audio/bodenstaendig_2000_in_rock_4bit.mp3');			
+		}
 		MainMenuState.create = function() {
 			Game.physics.startSystem(Phaser.Physics.ARCADE);
 			// *** build static scene ****
@@ -151,13 +156,26 @@ function GameInitialize() {
 			var bar = Game.add.graphics();
 			    bar.beginFill(0x000000, 0.2);
 			    bar.drawRect(0, 540, 800, 40);
+			var coins = Game.add.group();
+				for(var x=0; x < 12; x++){
+					var coin = coins.create(Game.world.randomX, Game.world.randomY, 'coins', 0);
+					Game.physics.arcade.enable( coin );
+					coin.body.velocity.setTo(200,200);
+					coin.body.collideWorldBounds = true;
+					coin.body.bounce.set(1);
+				}
+				coins.setAll('inputEnabled', true);
+			    //  Now using the power of callAll we can add the same animation to all coins in the group:
+			    coins.callAll('animations.add', 'animations', 'spin', [0, 1, 2, 3, 4, 5], 10, true);
+
+			    //  And play them
+			    coins.callAll('animations.play', 'animations', 'spin');
 
 			    music = Game.add.audio('bg_audio');
 				music.volume = 0.2;
 				menu_music = Game.add.audio('menu_switch');
 				menu_music.volume = 0.5;
-				dollar_music = Game.add.audio('dollar_bound');
-				dollar_music.volume = 0.5;
+
 			// текст главного меню
 			function addTextToScene( wX, wY, mText ) {
 				var curText = "";
@@ -179,18 +197,7 @@ function GameInitialize() {
 			};
 
 			addTextToScene(worldHalfWithX, 50, TitleText);
-			// jumping symbol Dollar
-			dollar = Game.add.bitmapText(10, 10, 'shortstack', '$', 32);
-			dollar2 = Game.add.bitmapText(10, 600, 'shortstack', '$', 32);
 
-			Game.physics.arcade.enable( [dollar, dollar2] );
-			dollar.body.velocity.setTo(200,200);
-			dollar.body.collideWorldBounds = true;
-			dollar.body.bounce.set(1);
-
-			dollar2.body.velocity.setTo(-100,-100);
-			dollar2.body.collideWorldBounds = true;
-			dollar2.body.bounce.set(1);
 
 			var	StaticText1 = Game.add.text( Game.world.width / 2, Game.world.height - 40, "Разработчик aka 'Zerom' 2016 (c)", {
 		            font: '14px Play',
@@ -316,7 +323,8 @@ function GameInitialize() {
 			    	CommentText.setText(' Switch to: ' + stY);
 			    	// todo: выбрать state и удалить мусор 
 			    	music.stop();
-			    	Game.state.start('TrainGame');
+
+			    	Game.state.start('TrainGame', true, true);
 			    } 
 		    };
 
@@ -328,9 +336,7 @@ function GameInitialize() {
 		}; //MainMenuState.create
 
 		MainMenuState.update = function() {
-			var onCollide = function() {
-				dollar_music.play();
-			}
+
 			// логика по клавишам вверх и вниз в меню для спрайта звезды
 			star.body.velocity.y = 0;
 			star.body.acceleration.y = 0;
@@ -340,7 +346,7 @@ function GameInitialize() {
 				if (SoundTrigger) music.play();
 					//SoundTrigger = true;
 			}
-			Game.physics.arcade.collide(dollar, dollar2, onCollide);
+
 		}; // MainMenuState.update~
 
 		MainMenuState.render = function() {
@@ -367,6 +373,8 @@ function GameInitialize() {
 		);
 		TrainGameState.preload = function() {
 			Game.load.spritesheet('dice', 'assets/dice.png', 64, 64);
+			Game.load.spritesheet('roll', 'assets/button-horizontal.png', 64, 32);
+			Game.load.image('cells','assets/block.png');
 		} // TrainGameState.preload~
 		TrainGameState.create = function() {
 		//  - добавим рабочий фон сцены
@@ -374,8 +382,22 @@ function GameInitialize() {
 			    bg.beginFill(0x507010, 0.5);
 			    bg.drawRect(0, 0, 800, 600);
 		//  - добавим кнопку возврата в меню (закрытие трейнгеймстейт)
-		//  - добавим начальный тестовый текст и скроем его и уничтожим
-			var	CommentText = Game.add.text( Game.world.width / 2 , Game.world.height / 2, "TrainGameState", {
+			var	CloseTrainText = Game.add.text( Game.world.width - 35, 15 , "Закрыть", {
+		            font: '12px Play',
+		            fill: '#ECD042',
+		            stroke: '#000000',
+		            strokeThickness: 1,
+		            align: 'center'
+		        });
+		    CloseTrainText.anchor.setTo(0.5,0.5);
+		    CloseTrainText.inputEnabled = true;
+		    CloseTrainText.input.useHandCursor = true;
+		    CloseTrainText.events.onInputDown.add(function(){
+		    	// ********
+		    	Game.state.start('MainMenu',true,true);
+		    },this);
+		//  - добавим начальный тестовый текст и скроем его и удалим
+			var	CommentText = Game.add.text( Game.world.width / 2 , Game.world.height / 2, "Тренировка", {
 		            font: '22px Play',
 		            fill: '#FFF',
 		            stroke: '#CCC',
@@ -385,10 +407,33 @@ function GameInitialize() {
 		    CommentText.anchor.setTo(0.5,0.5);
 		    var tween2 = Game.add.tween(CommentText).to({
 		        alpha: 0
-		    }, 1000, Phaser.Easing.Linear.None, true);
-		    
-		// - добавим кнопку "Бросить"
+		    }, 3000, Phaser.Easing.Linear.None, true);
+		    tween2.onComplete.add(function() {
+		        this.game.tweens.remove(tween2);
+		        console.log('this game tween removed;');
+		    }, this);
+		// - добавим кнопку "Бросить"		    
+		    var rollButtonOnClick = function(){
+		    	console.log('roll press');
+		    };
+			var rollButton = Game.add.button(Game.world.centerX, Game.world.centerY + 175, 'roll', rollButtonOnClick, this, 0, 0, 1);
+	    	rollButton.anchor.setTo(0.5, 0.5);
+			var	RollText = Game.add.text( Game.world.centerX, Game.world.centerY + 175, "Бросить", {
+		            font: '14px Play',
+		            fill: '#FFF',
+		            stroke: '#000',
+		            strokeThickness: 1,
+		            align: 'center'
+		        });
+		    RollText.anchor.setTo(0.5,0.5);	    	
 		// - добавим ячейки сбора костей
+			var diceCells = Game.add.group();
+			for(var i=0; i<6; i++){
+				var diceCell = diceCells.create(220 + (60*i),Game.world.centerY - 175,'cells',0);	
+			};
+			diceCells.setAll('scale.x', 0.5);
+			diceCells.setAll('scale.y', 0.5);
+
 		// - добавим панель с подсказками комбинаций
 			var footer = Game.add.graphics();
 			    footer.beginFill(0xe4e4e4, 0.5);
@@ -477,17 +522,22 @@ function GameInitialize() {
 						break;
 					};
 				};
-
-
-		// - добавим панель с досказками ходов (в трейне,а в игре тут будет панель соперника с аватаром и результатами раунов)
-		// - добавим панель с аватаром и результатми раундов
-		// - добавим общий результат хода игры по броскам
+		// - добавим панель с подсказками ходов. Подсказки при добавлении интерактива.
+			var rightPanel = Game.add.graphics();
+			    rightPanel.beginFill(0xA06D3D, 0.5);
+			    rightPanel.drawRect(Game.world.width - 125, Game.world.centerY -175, 120, 350);			
+		// - добавим панель с аватаром и результатами раундов
+			var leftPanel = Game.add.graphics();
+			    leftPanel.beginFill(0xAA6D3D, 0.5);
+			    leftPanel.drawRect(5, Game.world.centerY -175, 120, 350);		
+		// - добавим общий результат хода игры по броскам (ниже левой панели)
 		// - добавим кол-во текущих бросков в раунде
 		// - добавим кнопку вызова панельки с помощью (правилами)
 		// - добавим скрытую панель с текстом правил
 		// - добавим кнопку переключения звуков
 		// - добавим баннера (ротируемые в перспективе)
-		// todo: отделить статический каркас и вынести как константа всех сцен		    
+		// todo: отделить статический каркас и вынести как константа всех сцен	
+		// - добавить событие выброса костяшек	    
 		} // TrainGameState.create~
 		TrainGameState.update = function() {
 
