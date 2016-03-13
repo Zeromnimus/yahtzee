@@ -53,13 +53,14 @@ function GameInitialize() {
 	///////////////////////////////////////////////////////////////////////////
 	var BootGameState = new Phaser.State();
 		BootGameState.preload = function() {
-			Game.load.image('preloader','assets/cougar_dragonsun.png');
+			Game.load.image('preloader','assets/joker.png');
 		}; // BootGameState.preload~
 	    BootGameState.create = function() {
-		    var preloader = Game.add.image(0, 0, 'preloader');
-		    preloader.width = 800;
-		    preloader.height = 600;	    	
-	        LoadingText = Game.add.text(Game.world.width / 2, Game.world.height / 2, LOADING_TEXT, {
+		    var preloader = Game.add.image(Game.world.width / 2, Game.world.height / 2, 'preloader');
+		    preloader.anchor.setTo(0.5,0.5);
+		    // preloader.width = 800;
+		    // preloader.height = 600;	    	
+	        LoadingText = Game.add.text(Game.world.width / 2, (Game.world.height / 2) + 130, LOADING_TEXT, {
 	            font: '32px "Press Start 2P"',
 	            fill: '#FFFFFF',
 	            stroke: '#000000',
@@ -92,7 +93,7 @@ function GameInitialize() {
 		PreloaderGameState.create = function() {			
 		    var tween = Game.add.tween(LoadingText).to({
 		        alpha: 0
-		    }, 1000, Phaser.Easing.Linear.None, true);
+		    }, 3000, Phaser.Easing.Linear.None, true);
 
 		    tween.onComplete.add(function() {
 		        Game.state.start('MainMenu', false, false);
